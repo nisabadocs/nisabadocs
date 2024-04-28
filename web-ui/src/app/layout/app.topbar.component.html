@@ -1,0 +1,30 @@
+<div class="layout-topbar">
+  <a class="layout-topbar-logo" routerLink="">
+    <img [src]="logoUrl" *ngIf="logoUrl" alt="logo"/>
+  </a>
+
+  <button #menubutton class="p-link layout-menu-button layout-topbar-button" (click)="layoutService.onMenuToggle()">
+    <i class="pi pi-bars"></i>
+  </button>
+
+  <button #topbarmenubutton class="p-link layout-topbar-menu-button layout-topbar-button"
+          (click)="layoutService.showProfileSidebar()">
+    <i class="pi pi-ellipsis-v"></i>
+  </button>
+
+  <div #topbarmenu class="layout-topbar-menu"
+       [ngClass]="{'layout-topbar-menu-mobile-active': false}">
+    <div *ngIf="!keycloakService.isLoggedIn()" class="layout-topbar-auth">
+      <button (click)="login()" class="p-link layout-topbar-button" pTooltip="Login">
+        <i class="pi pi-sign-in"></i>
+        <span>Login</span>
+      </button>
+    </div>
+    <div *ngIf="keycloakService.isLoggedIn()" class="layout-topbar-auth" pTooltip="Logout">
+      <button (click)="logout()" class="p-link layout-topbar-button">
+        <i class="pi pi-sign-out"></i>
+        <span>Logout</span>
+      </button>
+    </div>
+  </div>
+</div>

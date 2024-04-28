@@ -1,0 +1,53 @@
+<div class="card">
+  <h2>Teams</h2>
+  <p-table [value]="teams" dataKey="id" [paginator]="true" [globalFilterFields]="['name', 'id']"
+           [rows]="10" [rowHover]="true">
+    <ng-template pTemplate="header">
+      <tr>
+        <th>Name</th>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="body" let-team>
+      <tr>
+        <td>
+          <a *ngIf="roleChecker.hasTeamUpdateRole()" (click)="goToTeamDetails(team.id)" style="cursor: pointer;">
+            {{ team.name }}
+          </a>
+          <span *ngIf="!roleChecker.hasTeamUpdateRole()">
+            {{ team.name }}
+          </span>
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
+  <button pButton pRipple type="button" label="Create Team" icon="pi pi-plus" class="p-button-text"
+          *ngIf="roleChecker.hasTeamCreateRole()"
+          (click)="showDialog()"></button>
+</div>
+
+<p-dialog header="Create Team" [(visible)]="displayDialog" [modal]="true" [style]="{width: '30vw'}" [closable]="false"
+          [dismissableMask]="true" *ngIf="roleChecker.hasTeamCreateRole()">
+  <!-- Form tag added for validation checking -->
+  <form #teamForm="ngForm">
+    <div class="grid col-12">
+      <div class="col-12">
+        <label for="name">Name</label>
+        <input id="name" type="text" pInputText [(ngModel)]="newTeam.name" name="name" #name="ngModel" required
+               placeholder="Enter team name" class="col-12"/>
+        <!-- Validation message -->
+        <div *ngIf="name.invalid && (name.dirty || name.touched)">
+          <small class="p-error" *ngIf="name.errors?.['required']" id="email-help">Not a valid email.</small>
+        </div>
+      </div>
+    </div>
+  </form>
+
+  <p-footer>
+    <button pButton type="button" label="Cancel" icon="pi pi-times" (click)="displayDialog = false"
+            class="p-button-secondary p-button-text"></button>
+    <button pButton type="submit" label="Create" icon="pi pi-check" (click)="createTeam()" [disabled]="teamForm.invalid"
+            *ngIf="roleChecker.hasTeamCreateRole()"
+            class="p-button-primary p-button-text"></button>
+  </p-footer>
+</p-dialog>
+

@@ -1,0 +1,34 @@
+.search-container {
+  display: flex;
+  align-items: center;
+  margin-bottom: 15px; /* Adjust spacing as needed */
+}
+
+.search-container .p-dropdown {
+  flex: 1; /* Make the dropdown fill available space */
+  margin-right: 10px;
+}
+
+.header-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 15px;
+}
+
+label[for="defaultVersion"] {
+  display: inline-block; /* Allows setting width */
+  margin-right: 10px;
+  font-weight: bold;
+}
+
+/* Styling the entire container */
+.default-version-container {
+  margin-bottom: 15px; /* Add spacing below */
+}
+
+.token-display p {
+  background-color: #ecf4ff; /* Light background for code-like appearance */
+  padding: 10px;
+  border-radius: 5px;
+}

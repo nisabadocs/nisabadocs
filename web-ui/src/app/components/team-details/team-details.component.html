@@ -1,0 +1,43 @@
+<p-fieldset [legend]="team.name" [toggleable]="true" *ngIf="team && roleChecker.hasTeamUpdateRole()">
+
+  <div class="header-row">
+    <div class="search-container" *ngIf="roleChecker.hasTeamMemberAddRole()">
+      <p-multiSelect [options]="availableMembers" [(ngModel)]="selectedMembers" optionLabel="email"
+                     [filter]="true" placeholder="Search by email">
+      </p-multiSelect>
+      <button pButton label="Add" icon="pi pi-plus" class="p-button-text" (click)="addMember()"></button>
+    </div>
+  </div>
+  <p-table [value]="members" [paginator]="true" [rows]="10">
+    <ng-template pTemplate="header">
+      <tr>
+        <th>Email</th>
+        <th>First Name</th>
+        <th>Last Name</th>
+        <th *ngIf="roleChecker.hasTeamMemberRemoveRole()">Actions</th>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="body" let-member>
+      <tr>
+        <td>{{ member.email }}</td>
+        <td>{{ member.firstName }}</td>
+        <td>{{ member.lastName }}</td>
+        <td *ngIf="roleChecker.hasTeamMemberRemoveRole()">
+          <button pButton pRipple icon="pi pi-trash" class="p-button-rounded p-button-danger p-button-text"
+                  pTooltip="Remove Member From Team"
+                  (click)="removeMember(member)"></button>
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
+</p-fieldset>
+<br/>
+<p-fieldset legend="Delete Team" [toggleable]="true" *ngIf="team && roleChecker.hasTeamDeleteRole()">
+  <div class="p-col-12">
+    <button pButton pRipple type="button" icon="pi pi-trash" class="p-button-danger"
+            *ngIf="roleChecker.hasProjectDeleteRole()"
+            label="Delete Team"
+            (click)="confirmDelete(team)"></button>
+  </div>
+</p-fieldset>
+

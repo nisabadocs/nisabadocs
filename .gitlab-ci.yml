@@ -1,0 +1,26 @@
+image: docker:latest
+services:
+  - docker:dind
+
+stages:
+  - build-publish-docker
+
+build-publish-docker:
+  stage: build-publish-docker
+  script:
+    - docker info
+    - docker login -u $DOCKER_REGISTERY_USERNAME -p $DOCKER_REGISTERY_TOKEN
+
+    - cd nisaba
+    - docker build -t nisabadocs/nisaba-api:${CI_COMMIT_TAG} .
+    - docker push nisabadocs/nisaba-api:${CI_COMMIT_TAG}
+    - cd ..
+
+    - cd web-ui
+    - docker build -t nisabadocs/nisaba-web-ui:${CI_COMMIT_TAG} .
+    - docker push nisabadocs/nisaba-web-ui:${CI_COMMIT_TAG}
+    - cd ..
+
+  only:
+    - tags
+

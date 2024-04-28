@@ -1,0 +1,31 @@
+<p-fieldset legend="Logo" [toggleable]="true" *ngIf="roleChecker.hasSettingsUpdateRole()">
+  <div class="grid">
+    <div class="col-12 md:col-12">
+      <div class="p-fluid">
+        <div class="field">
+          <label htmlFor="logoUrl">Logo URL</label>
+          <input id="logoUrl" type="text" pInputText [(ngModel)]="logo.settingValue"
+                 placeholder="Enter logo URL"/>
+          <img [src]="logo?.settingValue" *ngIf="logo.settingValue" height="32" width="125" class="preview-logo"
+               alt="Preview Logo"/>
+        </div>
+        <div class="field">
+          <label htmlFor="defaultViewer">Default Viewer</label>
+          <p-dropdown id="defaultViewer" [options]="viewerSelections" [(ngModel)]="defaultViewer.settingValue"
+                      name="visibility" #visibility="ngModel" [required]="true">
+          </p-dropdown>
+        </div>
+        <div class="field">
+          <label htmlFor="landingPage">Markdown Landing Page</label>
+          <textarea pInputTextarea type="text" [(ngModel)]="landingPage.settingValue"
+                    style="min-height: 150px"
+                    placeholder="Markdown Landing Page">
+          </textarea>
+        </div>
+      </div>
+    </div>
+    <button type="button" pButton pRipple label="Save" icon="pi pi-save" (click)="saveLogoUrl()"
+            class="p-button-text"></button>
+  </div>
+</p-fieldset>
+

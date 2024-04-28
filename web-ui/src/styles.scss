@@ -1,0 +1,15 @@
+/* You can add global styles to this file, and also import other style files */
+
+html {
+  font-size: 100px;
+}
+
+@import "assets/layout/styles/layout/layout.scss";
+@import "primeicons/primeicons.css";
+@import "primeng/resources/primeng.min.css";
+@import "primeflex/primeflex.scss";
+//@import "primeng/resources/themes/lara-light-indigo/theme.css";
+@import  "../node_modules/swagger-ui-dist/swagger-ui.css";
+
+
+

@@ -1,0 +1,62 @@
+<div class="card">
+  <h2>Members</h2>
+  <p-table [value]="members" [paginator]="true" [rows]="10"
+           [globalFilterFields]="['username', 'firstName', 'lastName', 'email']" [rowHover]="true">
+    <ng-template pTemplate="header">
+      <tr>
+        <th>Name</th>
+        <th>Email</th>
+        <th *ngIf="roleChecker.hasMemberAssignRole()">Role</th>
+        <th *ngIf="roleChecker.hasMemberDeleteRole()">Actions</th>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="body" let-member>
+      <tr>
+        <td>{{ member.firstName }} {{ member.lastName }}</td>
+        <td>{{ member.email }}</td>
+        <td *ngIf="roleChecker.hasMemberAssignRole()">
+          <p-dropdown [options]="roleNames" [(ngModel)]="member.role" placeholder="Select a role"
+                      (onChange)="assignRoleToUser(member.id, $event.value)" appendTo="body">
+
+          </p-dropdown>
+        </td>
+        <td *ngIf="roleChecker.hasMemberDeleteRole()">
+          <button pButton pRipple type="button" icon="pi pi-trash" class="p-button-danger p-button-text"
+                  pTooltip="Remove Member"
+                  *ngIf="roleChecker.hasMemberDeleteRole()"
+                  (click)="confirmDelete(member)"></button>
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
+  <button pButton pRipple type="button" label="Invite Member" icon="pi pi-plus" class="p-button-text"
+          *ngIf="roleChecker.hasMemberCreateRole()"
+          (click)="showDialog()"></button>
+</div>
+<p-dialog header="Invite Member" [(visible)]="displayDialog" [modal]="true" [style]="{width: '30vw'}" [closable]="false"
+          *ngIf="roleChecker.hasMemberCreateRole()"
+          [dismissableMask]="true">
+  <!-- Added form tag for validation -->
+  <form #memberForm="ngForm">
+    <div class="grid col-12">
+      <div class="col-12">
+        <label for="email">Email</label>
+        <input id="email" type="email" pInputText [(ngModel)]="newMember.email" name="email" #email="ngModel" required
+               email placeholder="Enter email" class="col-12"/>
+        <!-- Validation messages -->
+        <div *ngIf="email.invalid && (email.dirty || email.touched)" class="error">
+          <small *ngIf="email.errors?.['required']" class="p-error">Email is required.</small>
+          <small *ngIf="email.errors?.['email']" class="p-error">Enter a valid email address.</small>
+        </div>
+      </div>
+    </div>
+  </form>
+  <p-footer>
+    <button pButton type="button" label="Cancel" icon="pi pi-times" (click)="displayDialog = false"
+            class="p-button-secondary p-button-text">
+    </button>
+    <button pButton type="submit" label="Invite" icon="pi pi-check" (click)="createMember()"
+            [disabled]="memberForm.invalid" class="p-button-primary p-button-text">
+    </button>
+  </p-footer>
+</p-dialog>

@@ -1,0 +1,29 @@
+<div>
+  <div style="height: 5vh">
+    <nav class="p-menubar dark-top-bar">
+      <label class="p-menubar-title" (click)="goBackToAdmin()">
+        <i class="pi pi-arrow-left"></i>
+      </label>
+      <p-menubar-item>
+        <div>
+          <label for="projectVersion">Versions </label>
+          <p-dropdown id="projectVersion" [options]="versions" [(ngModel)]="selectedVersion"
+                      (onChange)="onVersionChange(selectedVersion!)" optionLabel="versionName"></p-dropdown>
+        </div>
+      </p-menubar-item>
+      <p-menubar-item>
+        <div>
+          <label for="docs">Docs </label>
+          <p-dropdown id="docs" [options]="versionDocs" [(ngModel)]="selectedDoc"
+                      (onChange)="onDocTypeChange(selectedDoc!)" optionLabel="title"></p-dropdown>
+        </div>
+      </p-menubar-item>
+    </nav>
+  </div>
+  <div style="height: 95vh" *ngIf="selectedDoc">
+    <app-swagger-ui *ngIf="type === 'swagger'" [yamlContent]="selectedDoc?.yamlContent!"></app-swagger-ui>
+    <app-stoplight-docs *ngIf="type === 'stoplight'" [yamlContent]="selectedDoc?.yamlContent!"
+                        [url]="baseUrl"></app-stoplight-docs>
+    <app-redoc *ngIf="type === 'redoc'" [yamlContent]="selectedDoc?.yamlContent!"></app-redoc>
+  </div>
+</div>

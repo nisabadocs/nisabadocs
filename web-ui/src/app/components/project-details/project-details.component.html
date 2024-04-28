@@ -1,0 +1,207 @@
+<h2 *ngIf="project">{{ project.name }}</h2>
+
+<p-fieldset legend="Project Details" [toggleable]="true" *ngIf="project && roleChecker.hasProjectUpdateRole()">
+  <form #projectForm="ngForm" (ngSubmit)="updateProject()">
+    <div class="col-12">
+      <div class="p-fluid p-formgrid grid">
+        <div class="field col-12 md:col-4">
+          <label for="projectName">Project Name</label>
+          <input pInputText id="projectName" [(ngModel)]="project.name" name="name" #name="ngModel" required/>
+          <small *ngIf="name.invalid && (name.dirty || name.touched)" class="p-error">
+            Project name is required.
+          </small>
+        </div>
+        <div class="field col-12 md:col-4">
+          <label for="projectSlug">Path Name</label>
+          <input type="text" id="projectSlug" pInputText [(ngModel)]="project.slug" name="slug" #slug="ngModel" required
+                 pattern="^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$"/>
+          <div *ngIf="slug.invalid && (slug.dirty || slug.touched)" class="p-error">
+            <small *ngIf="slug.errors?.['required']">Path name is required.</small>
+            <small *ngIf="slug.errors?.['pattern']">Invalid path name format.</small>
+          </div>
+        </div>
+        <div class="field col-12 md:col-4">
+          <label for="projectVisibility">Visibility</label>
+          <p-dropdown id="projectVisibility" [options]="visibilityOptions" [(ngModel)]="project.visibility"
+                      name="visibility" #visibility="ngModel" [required]="true">
+          </p-dropdown>
+          <small *ngIf="visibility.invalid && (visibility.dirty || visibility.touched)" class="p-error">
+            Visibility is required.
+          </small>
+        </div>
+      </div>
+    </div>
+    <div class="col-12 md:col-9">
+      <button pButton pRipple type="submit" label="Save" class="p-button-text" icon="pi pi-save"
+              [disabled]="!projectForm.form.valid"></button>
+    </div>
+  </form>
+</p-fieldset>
+
+<br/>
+<p-fieldset legend="Project Versions" [toggleable]="true" *ngIf="project && roleChecker.hasProjectVersionViewRole()">
+  <div class="default-version-container" *ngIf="roleChecker.hasProjectVersionUpdateRole()">
+    <label for="defaultVersion">Default:</label>
+    <p-dropdown id="defaultVersion" [options]="projectVersions" [(ngModel)]="selectedVersion"
+                optionLabel="versionName" placeholder="Select Default Version"
+                (onChange)="onVersionChange($event)">
+    </p-dropdown>
+  </div>
+
+  <p-table [value]="projectVersions">
+    <ng-template pTemplate="header">
+      <tr>
+        <th>Version Name</th>
+        <th>Creation Date</th>
+        <th>Actions</th>
+      </tr>
+    </ng-template>
+
+    <ng-template pTemplate="body" let-version>
+      <tr>
+        <td>{{ version.versionName }}</td>
+        <td>{{ version.creationDate | amTimeAgo }}</td>
+        <td>
+          <p-splitButton (onClick)="openDocumentation(version, 'default')"
+                         [model]="splitButtonItems"
+                         (onDropdownClick)="handleActionsClick(version)"
+                         appendTo="body"
+                         icon="pi pi-book"
+                         label="Open Docs"
+                         text>
+          </p-splitButton>
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
+</p-fieldset>
+<br/>
+<p-fieldset legend="Teams" [toggleable]="true" *ngIf="project && roleChecker.hasProjectTeamViewRole()">
+  <div class="p-col-6">
+    <div class="header-row" *ngIf="roleChecker.hasProjectTeamAssignRole()">
+      <div class="search-container">
+        <p-multiSelect [options]="availableTeams" [(ngModel)]="selectedTeams" optionLabel="name"
+                       [filter]="true" placeholder="Search by name">
+        </p-multiSelect>
+        <button pButton pRipple label="Add" icon="pi pi-plus" (click)="addTeam()" class="p-button-text"
+                *ngIf="roleChecker.hasProjectTeamAssignRole()"></button>
+      </div>
+    </div>
+    <p-table [value]="teams" [scrollable]="true" scrollHeight="300px">
+      <ng-template pTemplate="header">
+        <tr>
+          <th>Name</th>
+          <th *ngIf="roleChecker.hasProjectTeamRemoveRole()">Actions</th>
+        </tr>
+      </ng-template>
+
+      <ng-template pTemplate="body" let-team>
+        <tr>
+          <td>{{ team.name }}</td>
+          <td *ngIf="roleChecker.hasProjectTeamRemoveRole()">
+            <button pButton pRipple icon="pi pi-trash" class="p-button-rounded p-button-danger p-button-text"
+                    pTooltip="Remove Team From Project"
+                    (click)="removeTeam(team)"></button>
+          </td>
+        </tr>
+      </ng-template>
+    </p-table>
+  </div>
+</p-fieldset>
+<br/>
+<p-fieldset legend="Members" [toggleable]="true" *ngIf="project && roleChecker.hasProjectMemberViewRole()">
+  <div class="p-col-6">
+    <div class="header-row" *ngIf="roleChecker.hasProjectMemberAssignRole()">
+      <div class="search-container">
+        <p-multiSelect [options]="availableMembers" [(ngModel)]="selectedMembers" optionLabel="email"
+                       [filter]="true" placeholder="Search by email">
+        </p-multiSelect>
+        <button pButton pRipple label="Add" icon="pi pi-plus" class="p-button-text" (click)="addMember()"
+                *ngIf="roleChecker.hasProjectMemberAssignRole()"></button>
+      </div>
+    </div>
+    <p-table [value]="members" [scrollable]="true" scrollHeight="300px">
+      <ng-template pTemplate="header">
+        <tr>
+          <th>Email</th>
+          <th *ngIf="roleChecker.hasProjectMemberRemoveRole()">Actions</th>
+        </tr>
+      </ng-template>
+
+      <ng-template pTemplate="body" let-member>
+        <tr>
+          <td>{{ member.email }}</td>
+          <td *ngIf="roleChecker.hasProjectMemberRemoveRole()">
+            <button pButton pRipple icon="pi pi-trash" class="p-button-rounded p-button-danger p-button-text"
+                    pTooltip="Remove Member From Project"
+                    (click)="removeMember(member)"></button>
+          </td>
+        </tr>
+      </ng-template>
+    </p-table>
+  </div>
+</p-fieldset>
+<br/>
+<br/>
+<p-fieldset legend="Auth Tokens" [toggleable]="true" *ngIf="project && roleChecker.hasProjectTokenViewRole()">
+  <div class="p-col-12 token-display">
+    <p>npx nisaba-cli&#64;1.0.0 --project-id '{{ project?.id }}' --base-url '{{ baseUrl }}'
+      --token {{ token ? token : '*****' }}</p>
+    <p *ngIf="token">Here is your new token: <strong>{{ token }} <br/> Please save it somewhere, it will not be
+      accessible again.</strong></p>
+  </div>
+  <br/>
+  <p-table [value]="projectTokens" [paginator]="true" [rows]="10">
+    <ng-template pTemplate="header">
+      <tr>
+        <th>Name</th>
+        <th>Created</th>
+        <th>Last Used</th>
+        <th>Actions</th>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="body" let-token>
+      <tr>
+        <td>{{ token.name }}</td>
+        <td>{{ token.creationDate | amTimeAgo }}</td>
+        <td>{{ token.lastUsedDate ? (token.lastUsedDate | amTimeAgo) : 'Never' }}</td>
+        <td>
+          <button pButton pRipple icon="pi pi-trash" class="p-button-rounded p-button-danger p-button-text"
+                  pTooltip="Delete Token"
+                  (click)="confirmDeleteToken(token)"></button>
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
+  <button pButton pRipple type="button" label="Create New Token" icon="pi pi-plus" class="p-button-text"
+          (click)="showAuthTokenDialog()" *ngIf="roleChecker.hasProjectTokenViewRole()"></button>
+</p-fieldset>
+<br/>
+<p-fieldset legend="Delete Project" [toggleable]="true" *ngIf="project && roleChecker.hasProjectDeleteRole()">
+  <div class="p-col-12">
+    <button pButton pRipple type="button" icon="pi pi-trash" class="p-button-danger"
+            *ngIf="roleChecker.hasProjectDeleteRole()"
+            label="Delete Project"
+            (click)="confirmDeleteProject(project)"></button>
+  </div>
+</p-fieldset>
+
+<p-dialog header="Create New Token" [(visible)]="displayAuthTokenDialog" [modal]="true" [style]="{width: '30vw'}"
+          [closable]="false" [dismissableMask]="true" *ngIf="roleChecker.hasProjectTokenViewRole()">
+  <form #authTokenForm="ngForm">
+    <div class="grid col-12">
+      <div class="col-12">
+        <label for="name">Name</label>
+        <input id="name" type="text" pInputText [(ngModel)]="authToken.name" name="name" #name="ngModel"
+               required placeholder="Enter token name" class="col-12"/>
+        <small *ngIf="name.invalid && name.touched" class="p-error">Token name is required.</small>
+      </div>
+    </div>
+  </form>
+  <p-footer>
+    <button pButton type="button" label="Cancel" icon="pi pi-times" (click)="displayAuthTokenDialog = false"
+            class="p-button-secondary p-button-text"></button>
+    <button pButton type="submit" label="Create" icon="pi pi-check" (click)="createAuthToken()"
+            [disabled]="authTokenForm.invalid" class="p-button-primary p-button-text"></button>
+  </p-footer>
+</p-dialog>

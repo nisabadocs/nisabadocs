@@ -1,0 +1,41 @@
+.dark-top-bar {
+  position: fixed;  /* Make the top bar sticky */
+  top: 0;           /* Position it at the top of the screen */
+  left: 0;          /* Align it to the left */
+  width: 100%;      /* Make it span the full width of the viewport */
+  display: flex;    /* Keep your flexbox layout if using it */
+  justify-content: space-between;
+  align-items: center;
+  background-color: #212121;
+  color: #fff;
+  padding: 10px 15px;
+  z-index: 100;
+}
+.dark-top-bar .p-menubar-item {
+  margin-right: 10px; /* Add spacing between items */
+}
+
+/* Dropdown styles */
+.dark-top-bar .p-dropdown {
+  background-color: #303030; /* Dropdown background color */
+  color: #fff; /* Dropdown text color */
+  width: 175px; /* Set your desired width
+}
+
+.dark-top-bar .p-dropdown .p-dropdown-label {
+  color: #fff; /* Dropdown label color */
+}
+
+.dark-top-bar .p-dropdown .p-dropdown-item {
+  color: #fff; /* Dropdown item color */
+  width: 150px;
+}
+
+/* Optional: Hover effects for dropdown */
+.dark-top-bar .p-dropdown:hover {
+  background-color: #424242; /* Dropdown hover background */
+}
+
+::ng-deep .p-dropdown {
+  width: 175px;
+}

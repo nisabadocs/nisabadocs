@@ -1,0 +1,64 @@
+<div class="card">
+  <h2>Projects</h2>
+  <p-table [value]="projects" dataKey="id" [rows]="50" [rowHover]="true"
+           [paginator]="true" [globalFilterFields]="['name', 'slug', 'creationDate', 'lastUpdateDate']"
+           responsiveLayout="scroll">
+    <ng-template pTemplate="header">
+      <tr>
+        <th>Name</th>
+        <th>Path Name</th>
+        <th>Creation Date</th>
+        <th>Visibility</th>
+        <th>Actions</th>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="body" let-project>
+      <tr>
+        <td>
+          <a *ngIf="roleChecker.hasProjectViewRole()" (click)="navigateToProjectDetails(project.id)" style="cursor: pointer;">
+          {{ project.name }}
+        </a>
+          <span *ngIf="!roleChecker.hasProjectViewRole()">
+          {{ project.name }}
+        </span>
+        </td>
+        <td>{{ project.slug }}</td>
+        <td>{{ project.creationDate | amTimeAgo }}</td>
+        <td>{{ project.visibility }}</td>
+        <td>
+          <p-splitButton (onClick)="openDocumentation(project, 'default')"
+                         [model]="splitButtonItems"
+                         (onDropdownClick)="handleActionsClick(project)"
+                         appendTo="body"
+                         icon="pi pi-book"
+                         label="Open Docs"
+                         text>
+          </p-splitButton>
+
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
+  <button pButton pRipple type="button" label="Create Project" icon="pi pi-plus" class="p-button-text"
+          (click)="showDialog()" *ngIf="roleChecker.hasProjectCreateRole()"></button>
+</div>
+
+<p-dialog header="Create Project" [(visible)]="displayDialog" [modal]="true" [style]="{width: '30vw'}"
+          [closable]="false" [dismissableMask]="true" *ngIf="roleChecker.hasProjectCreateRole()">
+  <form #projectForm="ngForm">
+    <div class="grid col-12">
+      <div class="col-12">
+        <label for="name">Name</label>
+        <input id="name" type="text" pInputText [(ngModel)]="project.name" name="name" #name="ngModel"
+               required placeholder="Enter project name" class="col-12"/>
+        <small *ngIf="name.invalid && name.touched" class="p-error">Project name is required.</small>
+      </div>
+    </div>
+  </form>
+  <p-footer>
+    <button pButton type="button" label="Cancel" icon="pi pi-times" (click)="displayDialog = false"
+            class="p-button-secondary p-button-text"></button>
+    <button pButton type="submit" label="Create" icon="pi pi-check" (click)="createProject()"
+            [disabled]="projectForm.invalid" class="p-button-primary p-button-text"></button>
+  </p-footer>
+</p-dialog>

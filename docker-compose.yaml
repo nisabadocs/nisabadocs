@@ -1,0 +1,96 @@
+services:
+#  ui:
+#    image: nisabadocs/nisaba-web-ui:0.0.12
+#    platform: linux/amd64
+#    ports:
+#      - "4200:80"
+#    depends_on:
+#      - backend
+#    environment:
+#      - API_URL=http://localhost:8080
+#      - KEYCLOAK_URL=http://localhost:18080/auth
+#    networks:
+#      - nisaba-network
+#
+#  backend:
+#    image: nisabadocs/nisaba-api:0.0.12
+#    platform: linux/amd64
+#    depends_on:
+#      postgres:
+#        condition: service_healthy
+#    ports:
+#      - "8080:8080"
+#    environment:
+#      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/nisabadb
+#      SPRING_DATASOURCE_USERNAME: admin
+#      SPRING_DATASOURCE_PASSWORD: 123admin!
+#      KEYCLOAK_ISSUER_URI: http://keycloak:8080/auth/realms/Nisaba
+#      JWK_SET_URI: http://keycloak:8080/auth/realms/Nisaba/protocol/openid-connect/certs
+#      KEYCLOAK_AUTH_SERVER_URL: http://keycloak:8080/auth
+#      KEYCLOAK_REALM: Nisaba
+#      KEYCLOAK_CLIENT_ID: nisaba-backend-client
+#      KEYCLOAK_CLIENT_SECRET: Qf7i4Pyfnp7TuxfJNEKW0XVYyH3IDzlB
+#      CORS_ALLOWED_ORIGINS: http://localhost:4200
+#      CORS_ALLOWED_METHODS: GET,POST,PUT,DELETE,PATCH,OPTIONS
+#      CORS_ALLOWED_HEADERS: "*"
+##      LOGGING_LEVEL_ORG_SPRINGFRAMEWORK: DEBUG
+#    networks:
+#      - nisaba-network
+
+  keycloak:
+    container_name: keycloak
+    image: bitnami/keycloak:23.0.5
+    volumes:
+      - keycloak-theme:/opt/bitnami/keycloak/themes/identity
+      - ./nisaba-realm-export.json:/opt/bitnami/keycloak/data/import/nisaba-realm-export.json
+    ports:
+      - "18080:8080"
+    environment:
+      KEYCLOAK_HTTP_RELATIVE_PATH: /auth
+      KEYCLOAK_DATABASE_HOST: postgres
+      KEYCLOAK_DATABASE_NAME: nisabadb
+      KEYCLOAK_DATABASE_USER: admin
+      KEYCLOAK_DATABASE_PASSWORD: 123admin!
+      KEYCLOAK_ADMIN_USER: admin
+      KEYCLOAK_ADMIN_PASSWORD: admin
+      KEYCLOAK_EXTRA_ARGS: "-Dkeycloak.migration.action=import -Dkeycloak.migration.provider=singleFile -Dkeycloak.migration.file=/opt/bitnami/keycloak/data/import/nisaba-realm-export.json -Dkeycloak.migration.strategy=IGNORE_EXISTING"
+    restart: on-failure
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8080/auth/" ]
+      interval: 30s
+      timeout: 15s
+      retries: 5
+      start_period: 30s
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - nisaba-network
+
+  postgres:
+    image: postgres:15.3-alpine
+    container_name: postgres
+    environment:
+      POSTGRES_DB: nisabadb
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: 123admin!
+    restart: on-failure
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB" ] # $$-syntax for variable substitution
+      interval: 10s          # Check every 10 seconds
+      timeout: 5s            # Timeout after 5 seconds of failed checks
+      retries: 5
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - nisaba-network
+
+
+volumes:
+  postgres_data:
+  keycloak-theme:
+
+networks:
+  nisaba-network:
