@@ -1,0 +1,41 @@
+name: Build and Publish Docker Images
+
+on:
+  push:
+    tags:
+      - '*'
+
+jobs:
+  build-publish-docker:
+    runs-on: ubuntu-latest
+    services:
+      docker:
+        image: docker:dind
+        options: --privileged
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Login to Docker Registry
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_REGISTRY_USERNAME }}
+          password: ${{ secrets.DOCKER_REGISTRY_TOKEN }}
+
+      - name: Build and push Docker image for nisaba-api
+        run: |
+          cd nisaba
+          docker build -t nisabadocs/nisaba-api:${{ github.ref_name }} .
+          docker push nisabadocs/nisaba-api:${{ github.ref_name }}
+          cd ..
+
+      - name: Build and push Docker image for nisaba-web-ui
+        run: |
+          cd web-ui
+          docker build -t nisabadocs/nisaba-web-ui:${{ github.ref_name }} .
+          docker push nisabadocs/nisaba-web-ui:${{ github.ref_name }}
+          cd ..
