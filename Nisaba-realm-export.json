@@ -130,7 +130,7 @@
       "description" : "Admin",
       "composite" : true,
       "composites" : {
-        "realm" : [ "per:team:update", "per:project-member:view", "per:project-team:assign", "per:project-member:remove", "per:project-version:delete", "per:project:delete", "per:settings:update", "per:project-team:view", "per:project-token:view", "per:project-version:update", "per:team:create", "per:team-member:remove", "per:team:delete", "per:project:create", "per:team-member:add", "per:member:view", "per:project-member:assign", "per:team:view", "per:project-team:remove", "per:member:assignRole", "per:member:delete", "per:project:view", "per:team-member:view", "per:settings:view", "per:project:update", "per:project-version:view", "per:project-doc:view", "per:member:create", "per:project-version:create", "per:project:access:all" ]
+        "realm" : [ "per:team:update", "per:project-member:view", "per:project-team:assign", "per:project-member:remove", "per:project-version:delete", "per:project:delete", "per:settings:update", "per:project-team:view", "per:project-token:view", "per:project-token:delete", "per:project-token:create", "per:project-version:update", "per:team:create", "per:team-member:remove", "per:team:delete", "per:project:create", "per:team-member:add", "per:member:view", "per:project-member:assign", "per:team:view", "per:project-team:remove", "per:member:assignRole", "per:member:delete", "per:project:view", "per:team-member:view", "per:settings:view", "per:project:update", "per:project-version:view", "per:project-doc:view", "per:member:create", "per:project-version:create", "per:project:access:all" ]
       },
       "clientRole" : false,
       "containerId" : "6449ee62-f3a4-4f4b-9591-9b35247ec360",
@@ -189,7 +189,7 @@
       "description" : "Member",
       "composite" : true,
       "composites" : {
-        "realm" : [ "per:team:update", "per:project:access:internal", "per:team-member:add", "per:member:view", "per:project-member:view", "per:project-team:assign", "per:project-member:assign", "per:team:view", "per:project-member:remove", "per:project-team:remove", "per:project-version:delete", "per:project-team:view", "per:project-token:view", "per:project:view", "per:project-version:update", "per:team:create", "per:team-member:view", "per:project:update", "per:project-doc:view", "per:project-version:view", "per:project-version:create", "per:project:create" ]
+        "realm" : [ "per:team:update", "per:project:access:internal", "per:team-member:add", "per:member:view", "per:project-member:view", "per:project-team:assign", "per:project-member:assign", "per:team:view", "per:project-member:remove", "per:project-team:remove", "per:project-version:delete", "per:project-team:view", "per:project-token:view", "per:project-token:create", "per:project:view", "per:project-version:update", "per:team:create", "per:team-member:view", "per:project:update", "per:project-doc:view", "per:project-version:view", "per:project-version:create", "per:project:create" ]
       },
       "clientRole" : false,
       "containerId" : "6449ee62-f3a4-4f4b-9591-9b35247ec360",
@@ -264,6 +264,22 @@
     }, {
       "id" : "3369d0b2-3658-421c-979d-28b2237b2ec3",
       "name" : "per:project-token:view",
+      "description" : "",
+      "composite" : false,
+      "clientRole" : false,
+      "containerId" : "6449ee62-f3a4-4f4b-9591-9b35247ec360",
+      "attributes" : { }
+    }, {
+      "id" : "b0e57455-93de-4ddf-a360-5c5fce572ef7",
+      "name" : "per:project-token:delete",
+      "description" : "",
+      "composite" : false,
+      "clientRole" : false,
+      "containerId" : "6449ee62-f3a4-4f4b-9591-9b35247ec360",
+      "attributes" : { }
+    }, {
+      "id" : "aeca6faf-7b1a-4e70-bc3b-daa8232028d3",
+      "name" : "per:project-token:create",
       "description" : "",
       "composite" : false,
       "clientRole" : false,

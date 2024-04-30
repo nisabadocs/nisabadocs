@@ -157,7 +157,7 @@
         <th>Name</th>
         <th>Created</th>
         <th>Last Used</th>
-        <th>Actions</th>
+        <th *ngIf="roleChecker.hasProjectTokenDeleteRole()">Actions</th>
       </tr>
     </ng-template>
     <ng-template pTemplate="body" let-token>
@@ -165,7 +165,7 @@
         <td>{{ token.name }}</td>
         <td>{{ token.creationDate | amTimeAgo }}</td>
         <td>{{ token.lastUsedDate ? (token.lastUsedDate | amTimeAgo) : 'Never' }}</td>
-        <td>
+        <td *ngIf="roleChecker.hasProjectTokenDeleteRole()">
           <button pButton pRipple icon="pi pi-trash" class="p-button-rounded p-button-danger p-button-text"
                   pTooltip="Delete Token"
                   (click)="confirmDeleteToken(token)"></button>
@@ -174,7 +174,7 @@
     </ng-template>
   </p-table>
   <button pButton pRipple type="button" label="Create New Token" icon="pi pi-plus" class="p-button-text"
-          (click)="showAuthTokenDialog()" *ngIf="roleChecker.hasProjectTokenViewRole()"></button>
+          (click)="showAuthTokenDialog()" *ngIf="roleChecker.hasProjectTokenCreateRole()"></button>
 </p-fieldset>
 <br/>
 <p-fieldset legend="Delete Project" [toggleable]="true" *ngIf="project && roleChecker.hasProjectDeleteRole()">

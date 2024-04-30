@@ -68,6 +68,14 @@ export class RoleCheckerService {
     return this.hasRole('per:project-token:view');
   }
 
+  hasProjectTokenCreateRole(): boolean {
+    return this.hasRole('per:project-token:create');
+  }
+
+  hasProjectTokenDeleteRole(): boolean {
+    return this.hasRole('per:project-token:delete');
+  }
+
   // Project documentation roles
   hasProjectDocViewRole(): boolean {
     return this.hasRole('per:project-doc:view');
