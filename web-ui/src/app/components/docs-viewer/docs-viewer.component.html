@@ -20,10 +20,11 @@
       </p-menubar-item>
     </nav>
   </div>
-  <div style="height: 95vh" *ngIf="selectedDoc">
-    <app-swagger-ui *ngIf="type === 'swagger'" [yamlContent]="selectedDoc?.yamlContent!"></app-swagger-ui>
-    <app-stoplight-docs *ngIf="type === 'stoplight'" [yamlContent]="selectedDoc?.yamlContent!"
+  <div style="height: 95vh">
+    <app-async-viewer *ngIf="isAsyncViewer()" [yamlContent]="selectedDoc?.yamlContent!"/>
+    <app-swagger-ui *ngIf="!isAsyncViewer() && type === 'swagger'" [yamlContent]="selectedDoc?.yamlContent!"></app-swagger-ui>
+    <app-stoplight-docs *ngIf="!isAsyncViewer() &&  type === 'stoplight'" [yamlContent]="selectedDoc?.yamlContent!"
                         [url]="baseUrl"></app-stoplight-docs>
-    <app-redoc *ngIf="type === 'redoc'" [yamlContent]="selectedDoc?.yamlContent!"></app-redoc>
+    <app-redoc *ngIf="!isAsyncViewer() && type === 'redoc'" [yamlContent]="selectedDoc?.yamlContent!"></app-redoc>
   </div>
 </div>

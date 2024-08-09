@@ -1,6 +1,6 @@
 services:
 #  ui:
-#    image: nisabadocs/nisaba-web-ui:0.0.12
+#    image: nisabadocs/nisaba-web-ui:0.0.1
 #    platform: linux/amd64
 #    ports:
 #      - "4200:80"
@@ -13,7 +13,7 @@ services:
 #      - nisaba-network
 #
 #  backend:
-#    image: nisabadocs/nisaba-api:0.0.12
+#    image: nisabadocs/nisaba-api:0.0.1
 #    platform: linux/amd64
 #    depends_on:
 #      postgres:

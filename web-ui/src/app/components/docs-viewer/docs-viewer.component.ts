@@ -130,4 +130,7 @@ export class DocsViewerComponent implements OnInit {
     return commands;
   }
 
+  isAsyncViewer(): boolean {
+    return this.selectedDoc?.yamlContent?.startsWith('asyncapi:') || false;
+  }
 }

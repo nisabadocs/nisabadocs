@@ -47,6 +47,7 @@ import {SplitButtonModule} from "primeng/splitbutton";
 import { HomeComponent } from './components/home/home.component';
 import { MarkdownModule } from 'ngx-markdown';
 import {InputTextareaModule} from "primeng/inputtextarea";
+import { AsyncViewerComponent } from './components/async-viewer/async-viewer.component';
 
 @NgModule({
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
@@ -64,7 +65,8 @@ import {InputTextareaModule} from "primeng/inputtextarea";
     NotfoundComponent,
     InternalNotfoundComponent,
     SettingsComponent,
-    HomeComponent
+    HomeComponent,
+    AsyncViewerComponent
   ],
   imports: [
     BrowserModule,

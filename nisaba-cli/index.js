@@ -36,7 +36,23 @@ function isOpenAPIDocument(filePath) {
     const content = fs.readFileSync(filePath, 'utf8');
     try {
         const doc = YAML.load(content);
-        return doc.openapi || doc.swagger;
+        return doc.openapi || doc.swagger || doc.asyncapi;
+    } catch (error) {
+        console.error(`Error processing ${filePath}: ${error.message}`);
+        return false;
+    }
+}
+
+function isAsyncAPIDocument(filePath) {
+    if (!fs.existsSync(filePath)) {
+        console.error(`The file ${filePath} does not exist.`);
+        return false;
+    }
+
+    const content = fs.readFileSync(filePath, 'utf8');
+    try {
+        const doc = YAML.load(content);
+        return doc.asyncapi;
     } catch (error) {
         console.error(`Error processing ${filePath}: ${error.message}`);
         return false;
@@ -68,9 +84,14 @@ async function prepareOpenAPIDocuments(sourceFilePath) {
             throw new Error(`The file ${sourceFilePath} is not a valid OpenAPI document.`);
         }
 
-        const bundledFilePath = await bundleOpenAPIDocument(sourceFilePath);
-        formData.append('files', fs.createReadStream(bundledFilePath), path.basename(sourceFilePath));
-        return formData;
+        if (isAsyncAPIDocument(sourceFilePath)) {
+            formData.append('files', fs.createReadStream(sourceFilePath), path.basename(sourceFilePath));
+            return formData;
+        } else {
+            const bundledFilePath = await bundleOpenAPIDocument(sourceFilePath);
+            formData.append('files', fs.createReadStream(bundledFilePath), path.basename(sourceFilePath));
+            return formData;
+        }
     } else {
         const files = fs.readdirSync(process.cwd());
         const openAPIFiles = files.filter(file => file.endsWith('.yaml') && isOpenAPIDocument(file));
@@ -79,8 +100,12 @@ async function prepareOpenAPIDocuments(sourceFilePath) {
         }
 
         for (const file of openAPIFiles) {
-            const bundledFilePath = await bundleOpenAPIDocument(file);
-            formData.append('files', fs.createReadStream(bundledFilePath), path.basename(file));
+            if (isAsyncAPIDocument(file)) {
+                formData.append('files', fs.createReadStream(file), path.basename(file));
+            } else {
+                const bundledFilePath = await bundleOpenAPIDocument(file);
+                formData.append('files', fs.createReadStream(bundledFilePath), path.basename(file));
+            }
             console.log(`Bundled and prepared ${file} for upload.`);
         }
         return formData;
