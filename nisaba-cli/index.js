@@ -27,7 +27,7 @@ if (!options.projectId || !options.token || !options.baseUrl) {
 
 const bundledFiles = [];
 
-function isOpenAPIDocument(filePath) {
+function isValidAPIDocument(filePath) {
     if (!fs.existsSync(filePath)) {
         console.error(`The file ${filePath} does not exist.`);
         return false;
@@ -45,7 +45,7 @@ function isOpenAPIDocument(filePath) {
 
 function isAsyncAPIDocument(filePath) {
     if (!fs.existsSync(filePath)) {
-        console.error(`The file ${filePath} does not exist.`);
+        console.warn(`The file ${filePath} does not exist.`);
         return false;
     }
 
@@ -75,43 +75,43 @@ function bundleOpenAPIDocument(filePath) {
 
 async function prepareOpenAPIDocuments(sourceFilePath) {
     const formData = new FormData();
+    let filesToProcess = [];
 
     if (sourceFilePath) {
-        if (!fs.existsSync(sourceFilePath)) {
-            throw new Error(`The source file ${sourceFilePath} does not exist.`);
-        }
-        if (!isOpenAPIDocument(sourceFilePath)) {
-            throw new Error(`The file ${sourceFilePath} is not a valid OpenAPI document.`);
-        }
-
-        if (isAsyncAPIDocument(sourceFilePath)) {
-            formData.append('files', fs.createReadStream(sourceFilePath), path.basename(sourceFilePath));
-            return formData;
-        } else {
-            const bundledFilePath = await bundleOpenAPIDocument(sourceFilePath);
-            formData.append('files', fs.createReadStream(bundledFilePath), path.basename(sourceFilePath));
-            return formData;
-        }
+        filesToProcess = [sourceFilePath]; // Convert the single string into an array
     } else {
-        const files = fs.readdirSync(process.cwd());
-        const openAPIFiles = files.filter(file => file.endsWith('.yaml') && isOpenAPIDocument(file));
-        if (openAPIFiles.length === 0) {
-            throw new Error('No valid OpenAPI definition files found in the current directory.');
-        }
-
-        for (const file of openAPIFiles) {
-            if (isAsyncAPIDocument(file)) {
-                formData.append('files', fs.createReadStream(file), path.basename(file));
-            } else {
-                const bundledFilePath = await bundleOpenAPIDocument(file);
-                formData.append('files', fs.createReadStream(bundledFilePath), path.basename(file));
-            }
-            console.log(`Bundled and prepared ${file} for upload.`);
-        }
-        return formData;
+        filesToProcess = fs.readdirSync(process.cwd()).filter(file => file.endsWith('.yaml') && isValidAPIDocument(file)); // Read directory files
     }
-}
 
+    if (filesToProcess.length === 0) {
+        throw new Error('No valid OpenAPI definition files found.');
+    }
+
+    for (const filePath of filesToProcess) {
+        if (!fs.existsSync(filePath)) {
+            console.warn(`The file ${filePath} does not exist. Skipping.`);
+            continue;
+        }
+
+        if (!isValidAPIDocument(filePath)) {
+            console.warn(`The file ${filePath} is not a valid OpenAPI document. Skipping.`);
+            continue;
+        }
+
+        const fileToUpload = await (isAsyncAPIDocument(filePath)
+            ? Promise.resolve(filePath)
+            : bundleOpenAPIDocument(filePath));
+
+        formData.append('files', fs.createReadStream(fileToUpload), path.basename(fileToUpload));
+        console.log(`Prepared ${fileToUpload} for upload.`);
+    }
+
+    if (formData.getLengthSync() === 0) {
+        throw new Error('No valid OpenAPI documents to upload.');
+    }
+
+    return formData;
+}
 async function uploadFileToServer(formData, projectId, versionName, baseUrl, token) {
     const url = `${baseUrl}/api/project-versions/ci`;
     formData.append('projectId', projectId);
