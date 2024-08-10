@@ -87,6 +87,7 @@ async function prepareOpenAPIDocuments(sourceFilePath) {
         throw new Error('No valid OpenAPI definition files found.');
     }
 
+    let hasFilesToUpload = false;
     for (const filePath of filesToProcess) {
         if (!fs.existsSync(filePath)) {
             console.warn(`The file ${filePath} does not exist. Skipping.`);
@@ -103,10 +104,11 @@ async function prepareOpenAPIDocuments(sourceFilePath) {
             : bundleOpenAPIDocument(filePath));
 
         formData.append('files', fs.createReadStream(fileToUpload), path.basename(fileToUpload));
+        hasFilesToUpload = true;
         console.log(`Prepared ${fileToUpload} for upload.`);
     }
 
-    if (formData.getLengthSync() === 0) {
+    if (!hasFilesToUpload) {
         throw new Error('No valid OpenAPI documents to upload.');
     }
 
