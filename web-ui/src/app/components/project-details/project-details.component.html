@@ -145,7 +145,7 @@
 <br/>
 <p-fieldset legend="Auth Tokens" [toggleable]="true" *ngIf="project && roleChecker.hasProjectTokenViewRole()">
   <div class="p-col-12 token-display">
-    <p>npx nisaba-cli&#64;1.0.0 --project-id '{{ project?.id }}' --base-url '{{ baseUrl }}'
+    <p>npx nisaba-cli&#64;1.0.1 --project-id '{{ project?.id }}' --base-url '{{ baseUrl }}'
       --token {{ token ? token : '*****' }}</p>
     <p *ngIf="token">Here is your new token: <strong>{{ token }} <br/> Please save it somewhere, it will not be
       accessible again.</strong></p>
