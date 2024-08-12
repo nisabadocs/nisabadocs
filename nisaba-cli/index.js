@@ -27,10 +27,20 @@ if (!options.projectId || !options.token || !options.baseUrl) {
 
 const bundledFiles = [];
 
-function isValidAPIDocument(filePath) {
+function isValidDocumentation(filePath) {
     if (!fs.existsSync(filePath)) {
         console.error(`The file ${filePath} does not exist.`);
         return false;
+    }
+
+    if (!filePath.endsWith('.yaml') && !filePath.endsWith('.md')) {
+        console.log(`The file ${filePath} is not a YAML or Markdown file.`);
+        return false;
+    }
+
+    const ext = path.extname(filePath).toLowerCase();
+    if (ext === '.md') {
+        return true;
     }
 
     const content = fs.readFileSync(filePath, 'utf8');
@@ -41,6 +51,14 @@ function isValidAPIDocument(filePath) {
         console.error(`Error processing ${filePath}: ${error.message}`);
         return false;
     }
+}
+
+function isMarkDownDocument(filePath) {
+    if (!fs.existsSync(filePath)) {
+        console.warn(`The file ${filePath} does not exist.`);
+        return false;
+    }
+    return path.extname(filePath).toLowerCase() === '.md';
 }
 
 function isAsyncAPIDocument(filePath) {
@@ -54,7 +72,7 @@ function isAsyncAPIDocument(filePath) {
         const doc = YAML.load(content);
         return doc.asyncapi;
     } catch (error) {
-        console.error(`Error processing ${filePath}: ${error.message}`);
+        // console.error(`Error processing ${filePath}: ${error.message}`);
         return false;
     }
 }
@@ -73,14 +91,15 @@ function bundleOpenAPIDocument(filePath) {
     });
 }
 
-async function prepareOpenAPIDocuments(sourceFilePath) {
+async function prepareDocumentationsForUpload(sourceFilePath) {
     const formData = new FormData();
-    let filesToProcess = [];
+    let filesToProcess;
 
     if (sourceFilePath) {
         filesToProcess = [sourceFilePath]; // Convert the single string into an array
     } else {
-        filesToProcess = fs.readdirSync(process.cwd()).filter(file => file.endsWith('.yaml') && isValidAPIDocument(file)); // Read directory files
+        filesToProcess = fs.readdirSync(process.cwd())
+            .filter(file => isValidDocumentation(file));
     }
 
     if (filesToProcess.length === 0) {
@@ -94,12 +113,12 @@ async function prepareOpenAPIDocuments(sourceFilePath) {
             continue;
         }
 
-        if (!isValidAPIDocument(filePath)) {
+        if (!isValidDocumentation(filePath)) {
             console.warn(`The file ${filePath} is not a valid OpenAPI document. Skipping.`);
             continue;
         }
 
-        const fileToUpload = await (isAsyncAPIDocument(filePath)
+        const fileToUpload = await (isAsyncAPIDocument(filePath) || isMarkDownDocument(filePath)
             ? Promise.resolve(filePath)
             : bundleOpenAPIDocument(filePath));
 
@@ -114,6 +133,7 @@ async function prepareOpenAPIDocuments(sourceFilePath) {
 
     return formData;
 }
+
 async function uploadFileToServer(formData, projectId, versionName, baseUrl, token) {
     const url = `${baseUrl}/api/project-versions/ci`;
     formData.append('projectId', projectId);
@@ -146,7 +166,7 @@ function cleanupBundledFiles() {
 
 const {sourceFile, projectId, token, name, baseUrl} = options;
 
-prepareOpenAPIDocuments(sourceFile)
+prepareDocumentationsForUpload(sourceFile)
     .then(formData => uploadFileToServer(formData, projectId, name, baseUrl, token))
     .then(() => cleanupBundledFiles())
     .catch(error => {

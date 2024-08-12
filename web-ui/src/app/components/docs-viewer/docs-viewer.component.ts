@@ -92,10 +92,19 @@ export class DocsViewerComponent implements OnInit {
   }
 
   private processVersionDocs(data: any): void {
-    this.versionDocs = data.map((document: ProjectVersionDoc) => ({
-      ...document,
-      title: (yaml.load(document.yamlContent!) as any).info.title || document.fileName
-    }));
+    this.versionDocs = data.map((document: ProjectVersionDoc) => {
+      let title;
+      try {
+        const parsedContent = yaml.load(document.yamlContent!) as any;
+        title = parsedContent?.info?.title;
+      } catch (error) {
+      }
+
+      return {
+        ...document,
+        title: title || document.fileName
+      };
+    });
     this.findAndSetSelectedDocuments();
   }
 
@@ -132,5 +141,13 @@ export class DocsViewerComponent implements OnInit {
 
   isAsyncViewer(): boolean {
     return this.selectedDoc?.yamlContent?.startsWith('asyncapi:') || false;
+  }
+
+  isOpenApiViewer(): boolean {
+    return this.selectedDoc?.yamlContent?.startsWith('openapi:') || false;
+  }
+
+  isMarkDownViewer(): boolean {
+    return this.selectedDoc?.fileName?.endsWith('.md') || false;
   }
 }

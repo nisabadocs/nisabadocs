@@ -43,6 +43,7 @@
             ],
             "styles": [
               "src/styles.scss",
+              "node_modules/github-markdown-css/github-markdown.css",
               "node_modules/prismjs/themes/prism-okaidia.css",
               "node_modules/prismjs/plugins/command-line/prism-command-line.css"
             ],

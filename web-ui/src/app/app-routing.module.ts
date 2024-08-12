@@ -72,6 +72,13 @@ const routes: Routes = [
     ]
   },
   {
+    path: 'docs/:projectSlug/doc/:docName',
+    component: DocsViewerComponent,
+    children: [
+      {path: '**', component: DocsViewerComponent}
+    ]
+  },
+  {
     path: 'docs/:projectSlug/version/:versionName',
     component: DocsViewerComponent,
     children: [

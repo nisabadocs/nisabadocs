@@ -22,9 +22,11 @@
   </div>
   <div style="height: 95vh">
     <app-async-viewer *ngIf="isAsyncViewer()" [yamlContent]="selectedDoc?.yamlContent!"/>
-    <app-swagger-ui *ngIf="!isAsyncViewer() && type === 'swagger'" [yamlContent]="selectedDoc?.yamlContent!"></app-swagger-ui>
-    <app-stoplight-docs *ngIf="!isAsyncViewer() &&  type === 'stoplight'" [yamlContent]="selectedDoc?.yamlContent!"
-                        [url]="baseUrl"></app-stoplight-docs>
-    <app-redoc *ngIf="!isAsyncViewer() && type === 'redoc'" [yamlContent]="selectedDoc?.yamlContent!"></app-redoc>
+    <app-markdown-viewer *ngIf="isMarkDownViewer()" [content]="selectedDoc?.yamlContent!"/>
+    <app-swagger-ui *ngIf="isOpenApiViewer() && type === 'swagger'"
+                    [yamlContent]="selectedDoc?.yamlContent!"/>
+    <app-stoplight-docs *ngIf="isOpenApiViewer() &&  type === 'stoplight'" [yamlContent]="selectedDoc?.yamlContent!"
+                        [url]="baseUrl"/>
+    <app-redoc *ngIf="isOpenApiViewer() && type === 'redoc'" [yamlContent]="selectedDoc?.yamlContent!"/>
   </div>
 </div>

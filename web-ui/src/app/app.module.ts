@@ -48,6 +48,7 @@ import { HomeComponent } from './components/home/home.component';
 import { MarkdownModule } from 'ngx-markdown';
 import {InputTextareaModule} from "primeng/inputtextarea";
 import { AsyncViewerComponent } from './components/async-viewer/async-viewer.component';
+import { MarkdownViewerComponent } from './components/markdown-viewer/markdown-viewer.component';
 
 @NgModule({
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
@@ -66,7 +67,8 @@ import { AsyncViewerComponent } from './components/async-viewer/async-viewer.com
     InternalNotfoundComponent,
     SettingsComponent,
     HomeComponent,
-    AsyncViewerComponent
+    AsyncViewerComponent,
+    MarkdownViewerComponent
   ],
   imports: [
     BrowserModule,
